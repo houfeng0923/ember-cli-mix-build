@@ -1,0 +1,23 @@
+{
+  "name": "ember-cli-mix-build",
+  "version": "0.0.1",
+  "main": "index.js",
+  "keywords": [
+    "ember-addon",
+    "ember-resolver"
+  ],
+  "devDependencies": {
+    "debug": "^4.1.1",
+    "ember-cli": "*",
+    "ember-resolver": "*",
+    "ember-source": "*"
+  },
+  "dependencies": {
+    "broccoli-funnel": "^3.0.2",
+    "broccoli-merge-trees": "^4.2.0",
+    "broccoli-plugin": "^4.0.2",
+    "ember-cli-babel": "*",
+    "ember-cli-lint": "^0.0.1",
+    "walk-sync": "^2.0.2"
+  }
+}
