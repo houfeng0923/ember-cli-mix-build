@@ -97,7 +97,7 @@ function getBuildParams(params, required) {
   return params.map(key => {
     let v = process.env[key];
     if (!v && required) {
-      throw new Error(`missing required process environment parameter "${v}"`);
+      throw new Error(`missing required process environment parameter "${key}"`);
     }
     return v && v.toLowerCase();
   });
