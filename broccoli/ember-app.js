@@ -1,10 +1,11 @@
 const fs = require('fs');
+const path = require('path');
 const walkSync = require('walk-sync');
 const stew = require('broccoli-stew');
 const funnel = require('broccoli-funnel');
 const mergeTrees = require('broccoli-merge-trees');
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
-const { getTargetPath, existSources, resolve, uniq } = require('./util');
+const { getTargetPath, existSources, resolve, uniq, isEmptyDir, excludeTrim } = require('./util');
 
 const debug = require('debug')('erebor-cli-mix-build:debug');
 
@@ -120,7 +121,12 @@ function filteredDirsTrees(sources, publicPlaceholder) {
     let overwritten =  walkSync(input, { ignore: [publicPlaceholder] ,globs: ['**/-*']})
     .reduce((list,  dir) => {
       if (!list.find(({source: path}) => dir.startsWith(path))) {
-        list.push({source: dir, target: getTargetPath(dir)});
+        let target = getTargetPath(dir);
+        if ( isEmptyDir(path.resolve(input, dir)) ) {
+          list.push({source: dir, match: target});
+        } else {
+          list.push({source: dir, target, match: target});
+        }
       }
       return list;
     }, [])
@@ -132,18 +138,18 @@ function filteredDirsTrees(sources, publicPlaceholder) {
   }
   return filteredDirs.map(({input, overwritten}, index, dirs) => {
     let exclude = dirs.slice(index + 1)
-      .reduce((a, d) => a.concat(d.overwritten ? d.overwritten.map(o => o.target): []), []);
+      .reduce((a, d) => a.concat(d.overwritten ? d.overwritten.map(o => o.match): []), [])
+      .filter(Boolean);
     let move = overwritten.filter(o => !exclude.find(e => e === o.source));
-    exclude = uniq([publicPlaceholder, ...exclude], p => p.replace(/(.*)\/$/, '$1'))
+    exclude = uniq([publicPlaceholder, ...exclude], p => excludeTrim(p))
     debug(`public tree (${input}) exclude: ${exclude}`);
     debug(`public tree (${input}) move:    ${JSON.stringify(move)}`);
 
     let tree = funnel(input, { exclude });
-    if (move.length) {
-      tree = move.reduce((tree, {source, target}) => {
-        return stew.mv(tree, source, target);
-      }, tree);
-    }
+    tree = move.reduce((tree, {source, target}) => {
+      if (target) return stew.mv(tree, source, target);
+      else return stew.rm(tree, excludeTrim(source));
+    }, tree);
     return tree;
   });
 }

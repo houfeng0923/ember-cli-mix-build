@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const walkSync = require('walk-sync');
 
 
 
@@ -23,9 +24,20 @@ function uniq(arr, map = o => o) {
   return [...set];
 }
 
+function isEmptyDir(dir, options = { ignore: ['.gitkeep'] }) {
+  let list = walkSync(path.resolve(dir), options );
+  return list.length === 0;
+}
+
+function excludeTrim(pathname) {
+  return pathname.replace(/(.*)\/$/, '$1');
+}
+
 module.exports = {
   resolve,
   getTargetPath,
   existSources,
   uniq,
+  isEmptyDir,
+  excludeTrim
 };
