@@ -1,6 +1,5 @@
 'use strict';
 
-
 module.exports = {
   name: require('./package').name,
 
@@ -33,5 +32,11 @@ module.exports = {
       addon.included(parent);
     }
   },
+
+  postBuild(results) {
+    if (process.argv.indexOf('--show-slowest') > -1) {
+      require('broccoli-slow-trees')(results.graph.__heimdall__);
+    }
+  }
 
 };
