@@ -7,7 +7,6 @@
     "ember-resolver"
   ],
   "devDependencies": {
-    "debug": "^4.1.1",
     "ember-cli": "*",
     "ember-resolver": "*",
     "ember-source": "*"
@@ -17,6 +16,7 @@
     "broccoli-merge-trees": "^4.2.0",
     "broccoli-plugin": "^4.0.2",
     "broccoli-slow-trees": "^3.1.0",
+    "debug": "^4.1.1",
     "ember-cli-babel": "*",
     "ember-cli-lint": "^0.0.1",
     "walk-sync": "^2.0.2"
