@@ -114,7 +114,7 @@ function filteredTrees(sources, options = {}) {
 }
 
 // resolve [-dir]
-function filteredDirsTrees(sources, publicPlaceholder) {
+function filteredDirReplacedTrees(sources, publicPlaceholder) {
   let filteredDirs = [];
   for (let i = sources.length - 1; i >= 0; i--) {
     const input = resolve(sources[i]);
@@ -166,7 +166,7 @@ function publicSourcesMergeTrees(publicSources, brandName) {
       }
     }
     trees.push(mergeTrees(
-      filteredDirsTrees(mergedSources, publicPlaceholder),
+      filteredDirReplacedTrees(mergedSources, publicPlaceholder),
       { overwrite: true, annotation: 'merged public tree' }
     ));
     return trees;
