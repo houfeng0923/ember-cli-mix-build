@@ -17,7 +17,7 @@ class EmberCombinedApp extends EmberApp {
   }
 
   remapStyleOutput() {
-     // remap outputPaths for styles
+    // remap outputPaths for styles
     const { outputPaths } = this.options;
     const cssPaths = outputPaths.app.css;
     if (Object.keys(cssPaths).find(k => k.startsWith('app')).length > 1) {
@@ -55,7 +55,7 @@ function initBuildTrees(projectName, brandName) {
   let appSources = [...allApps];
   let styleSources = existSources(allApps.map(app => `${app}/styles`));
   let templateSources = existSources(allApps.map(app => `${app}/templates`));
-  let publicSources = existSources([ 'public' ]);
+  let publicSources = existSources(['public']);
   let embeddedPublicSources = existSources(allApps.map(app => `${app}/${EmbeddedPublicPath}`));
 
   debug(`trees.app: ${appSources}`);
@@ -63,8 +63,8 @@ function initBuildTrees(projectName, brandName) {
   debug(`trees.templates: ${templateSources}`);
   debug(`trees.public: ${publicSources} + ${embeddedPublicSources}`);
 
-  appSources = filteredTrees(appSources, {exclude: [EmbeddedPublicPath]});
-  publicSources = publicSourcesMergeTrees([ ...publicSources, ...embeddedPublicSources ], brandName);
+  appSources = filteredTrees(appSources, { exclude: [EmbeddedPublicPath] });
+  publicSources = publicSourcesMergeTrees([...publicSources, ...embeddedPublicSources], brandName);
 
   return {
     app: mergeTrees(appSources, { overwrite: true, annotation: 'mix-app' }),
@@ -105,40 +105,40 @@ function getBuildParams(params, required) {
 }
 
 function filteredTrees(sources, options = {}) {
- return sources.map((node) => {
-   return funnel(node, {
-     annotation: `Filter (${node})`,
-    ...options,
-   })
- });
+  return sources.map((node) => {
+    return funnel(node, {
+      annotation: `Filter (${node})`,
+      ...options,
+    })
+  });
 }
 
 // resolve [-dir]
 function filteredDirsTrees(sources, publicPlaceholder) {
   let filteredDirs = [];
-  for (let i = sources.length - 1; i >= 0 ; i--) {
+  for (let i = sources.length - 1; i >= 0; i--) {
     const input = resolve(sources[i]);
-    let overwritten =  walkSync(input, { ignore: [publicPlaceholder] ,globs: ['**/-*']})
-    .reduce((list,  dir) => {
-      if (!list.find(({source: path}) => dir.startsWith(path))) {
-        let target = getTargetPath(dir);
-        if ( isEmptyDir(path.resolve(input, dir)) ) {
-          list.push({source: dir, match: target});
-        } else {
-          list.push({source: dir, target, match: target});
+    let overwritten = walkSync(input, { ignore: [publicPlaceholder], globs: ['**/-*'] })
+      .reduce((list, dir) => {
+        if (!list.find(({ source: path }) => dir.startsWith(path))) {
+          let target = getTargetPath(dir);
+          if (isEmptyDir(path.resolve(input, dir))) {
+            list.push({ source: dir, match: target });
+          } else {
+            list.push({ source: dir, target, match: target });
+          }
         }
-      }
-      return list;
-    }, [])
-    .filter(({source: dir}) => fs.statSync(resolve(input, dir)).isDirectory());
+        return list;
+      }, [])
+      .filter(({ source: dir }) => fs.statSync(resolve(input, dir)).isDirectory());
     filteredDirs.unshift({
       input: sources[i],
       overwritten
     });
   }
-  return filteredDirs.map(({input, overwritten}, index, dirs) => {
+  return filteredDirs.map(({ input, overwritten }, index, dirs) => {
     let exclude = dirs.slice(index + 1)
-      .reduce((a, d) => a.concat(d.overwritten ? d.overwritten.map(o => o.match): []), [])
+      .reduce((a, d) => a.concat(d.overwritten ? d.overwritten.map(o => o.match) : []), [])
       .filter(Boolean);
     let move = overwritten.filter(o => !exclude.find(e => e === o.source));
     exclude = uniq([publicPlaceholder, ...exclude], p => excludeTrim(p))
@@ -146,7 +146,7 @@ function filteredDirsTrees(sources, publicPlaceholder) {
     debug(`public tree (${input}) move:    ${JSON.stringify(move)}`);
 
     let tree = funnel(input, { exclude });
-    tree = move.reduce((tree, {source, target}) => {
+    tree = move.reduce((tree, { source, target }) => {
       if (target) return stew.mv(tree, source, target);
       else return stew.rm(tree, excludeTrim(source));
     }, tree);
