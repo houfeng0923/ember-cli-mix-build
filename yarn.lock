@@ -1764,6 +1764,13 @@ broccoli-slow-trees@^3.0.1:
   dependencies:
     heimdalljs "^0.2.1"
 
+broccoli-slow-trees@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.npm.taobao.org/broccoli-slow-trees/download/broccoli-slow-trees-3.1.0.tgz#8e48903f59e061bf1213963733b9e61dec2ee5d7"
+  integrity sha1-jkiQP1ngYb8SE5Y3M7nmHewu5dc=
+  dependencies:
+    heimdalljs "^0.2.1"
+
 broccoli-source@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npm.taobao.org/broccoli-source/download/broccoli-source-1.1.0.tgz#54f0e82c8b73f46580cbbc4f578f0b32fca8f809"
