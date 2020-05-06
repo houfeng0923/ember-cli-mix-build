@@ -34,7 +34,7 @@ module.exports = {
   },
 
   postBuild(results) {
-    if (process.argv.indexOf('--show-slowest') > -1) {
+    if (process.env.SHOW_SLOWEST) {
       require('broccoli-slow-trees')(results.graph.__heimdall__);
     }
   }
