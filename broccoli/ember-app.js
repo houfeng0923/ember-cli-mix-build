@@ -6,12 +6,13 @@ const funnel = require('broccoli-funnel');
 const mergeTrees = require('broccoli-merge-trees');
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const { getTargetPath, existSources, resolve, uniq, isEmptyDir, excludeTrim } = require('./util');
-
 const debug = require('debug')('erebor-cli-mix-build:debug');
+
+const EmbeddedPublicPath = 'public';
 
 class EmberCombinedApp extends EmberApp {
   constructor(defaults, options) {
-    options = Object.assign(initHybridOptions(defaults), options);
+    options = initHybridOptions(defaults, options);
     super(defaults, options);
     this.remapStyleOutput();
   }
@@ -31,24 +32,27 @@ class EmberCombinedApp extends EmberApp {
 module.exports = EmberCombinedApp;
 
 
-function initHybridOptions(defaults) {
-  let [brandName] = getBuildParams(['APP_BRAND']);
-  let [projectName] = getBuildParams(['APP_PROJECT'], true);
+function initHybridOptions(defaults, defaultOptions) {
+  const EMBER_ENV = process.env.EMBER_ENV;
+  const options = {};
+  const [brandName] = getBuildParams(['APP_BRAND']);
+  const [projectName] = getBuildParams(['APP_PROJECT'], true);
   debug(`APP_BRAND: ${brandName}; APP_PROJECT: ${projectName}`);
-  this.brandName = brandName;
-  this.projectName = projectName;
-  let config = defaults.project.config(process.env.EMBER_ENV);
-  let outputPaths;
-  if (brandName) {
-    outputPaths = initOutputPaths(brandName, config);
-  }
-  let trees = initBuildTrees(projectName, brandName);
-  return {
-    trees, outputPaths
-  };
-}
 
-const EmbeddedPublicPath = 'public';
+  if (typeof defaultOptions.hinting === 'undefined') {
+    options.hinting = EMBER_ENV === 'development';
+  }
+  if (typeof defaultOptions.tests === 'undefined') {
+    options.tests = EMBER_ENV === 'test';
+  }
+  if (brandName) {
+    let config = defaults.project.config(EMBER_ENV);
+    options.outputPaths = initOutputPaths(brandName, config);
+  }
+  options.trees = initBuildTrees(projectName, brandName);
+
+  return Object.assign(defaultOptions, options);
+}
 
 function initBuildTrees(projectName, brandName) {
   let allApps = existSources(mapAllApps(projectName));
