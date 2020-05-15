@@ -12,9 +12,16 @@ const EmbeddedPublicPath = 'public';
 
 class EmberCombinedApp extends EmberApp {
   constructor(defaults, options) {
-    options = initHybridOptions(defaults, options);
+    const config = defaults.project.config(process.env.EMBER_ENV);
+    const [brandName] = getBuildParams(['APP_BRAND']);
+    const [projectName] = getBuildParams(['APP_PROJECT'], true);
+    config.brandName = brandName;
+    config.projectName = projectName;
+    options = initHybridOptions(config, options);
     super(defaults, options);
+    this.config = config;
     this.remapStyleOutput();
+    this.addonProjectExtraTrees();
   }
 
   remapStyleOutput() {
@@ -26,13 +33,30 @@ class EmberCombinedApp extends EmberApp {
     }
     debug(`outputPaths.app.css: ${Object.keys(outputPaths.app.css)}`);
   }
+
+  addonProjectExtraTrees() {
+    this.projectExtraTrees = [];
+    const projectName = this.config.projectName;
+    const projectBuildScript = resolve(`${projectName}/build.js`);
+    if (fs.existsSync(projectBuildScript)) {
+      let trees = require(projectBuildScript)(this);
+      if (trees) {
+        this.projectExtraTrees.push(...trees);
+      }
+    }
+  }
+
+  toTree(additionalTrees = []) {
+    additionalTrees.push(...this.projectExtraTrees||[]);
+    return super.toTree(additionalTrees);
+  }
 }
 
 
 module.exports = EmberCombinedApp;
 
 
-function initHybridOptions(defaults, defaultOptions) {
+function initHybridOptions(config, defaultOptions) {
   const EMBER_ENV = process.env.EMBER_ENV;
   const options = {};
   const [brandName] = getBuildParams(['APP_BRAND']);
@@ -46,7 +70,6 @@ function initHybridOptions(defaults, defaultOptions) {
     options.tests = EMBER_ENV === 'test';
   }
   if (brandName) {
-    let config = defaults.project.config(EMBER_ENV);
     options.outputPaths = initOutputPaths(brandName, config);
   }
   options.trees = initBuildTrees(projectName, brandName);

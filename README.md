@@ -51,7 +51,7 @@ A new ember app building for mix project structure.
 │       └── app.css
 │   └── public
 │       └── sound
-├── .
+├── [build.js]
 ├── app-advance
 │   └── ...
 ├── config
