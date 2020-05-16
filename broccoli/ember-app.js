@@ -9,6 +9,7 @@ const { getTargetPath, existSources, resolve, uniq, isEmptyDir, excludeTrim } = 
 const debug = require('debug')('erebor-cli-mix-build:debug');
 
 const EmbeddedPublicPath = 'public';
+const SubAppBuildScriptFile = 'build.js';
 
 class EmberCombinedApp extends EmberApp {
   constructor(defaults, options) {
@@ -37,7 +38,7 @@ class EmberCombinedApp extends EmberApp {
   addonProjectExtraTrees() {
     this.projectExtraTrees = [];
     const projectName = this.config.projectName;
-    const projectBuildScript = resolve(`${projectName}/build.js`);
+    const projectBuildScript = resolve(`${projectName}/${SubAppBuildScriptFile}`);
     if (fs.existsSync(projectBuildScript)) {
       let trees = require(projectBuildScript)(this);
       if (trees) {
@@ -90,7 +91,7 @@ function initBuildTrees(projectName, brandName) {
   debug(`trees.templates: ${templateSources}`);
   debug(`trees.public: ${publicSources} + ${embeddedPublicSources}`);
 
-  appSources = filteredTrees(appSources, { exclude: [EmbeddedPublicPath] });
+  appSources = filteredTrees(appSources, { exclude: [EmbeddedPublicPath, SubAppBuildScriptFile] });
   publicSources = publicSourcesMergeTrees([...publicSources, ...embeddedPublicSources], brandName);
 
   return {
