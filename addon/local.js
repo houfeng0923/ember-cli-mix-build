@@ -43,7 +43,7 @@ Resolver.reopen({
     }
 
     // Remove the prefix from the target module name
-    if (parsedTarget.type === 'template' && targetName.startsWith('components')) {
+    if (parsedTarget.type === 'template' && targetName.indexOf('components') === 0) {
       const prefixLength = 'components/'.length;
       targetName = targetName.slice(prefixLength);
     }
