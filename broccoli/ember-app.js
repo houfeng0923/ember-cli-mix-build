@@ -23,8 +23,8 @@ class EmberCombinedApp extends EmberApp {
     const extraOptions = this._loadSubProjectCli(this.options);
     if (extraOptions) {
       this.options = defaultsDeep(this.options, extraOptions);
-      remapOutputPaths(this.options);
     }
+    remapOutputPaths(this.options);
   }
 
   _loadSubProjectCli(options) {
