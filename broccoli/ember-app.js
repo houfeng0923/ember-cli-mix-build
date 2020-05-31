@@ -5,6 +5,7 @@ const stew = require('broccoli-stew');
 const funnel = require('broccoli-funnel');
 const mergeTrees = require('broccoli-merge-trees');
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
+const defaultsDeep = require('ember-cli-lodash-subset').defaultsDeep;
 const { getTargetPath, existSources, resolve, uniq, isEmptyDir, excludeTrim } = require('./util');
 const debug = require('debug')('erebor-cli-mix-build:debug');
 
@@ -13,42 +14,34 @@ const SubAppBuildScriptFile = 'build.js';
 
 class EmberCombinedApp extends EmberApp {
   constructor(defaults, options) {
-    const config = defaults.project.config(process.env.EMBER_ENV);
-    const [brandName] = getBuildParams(['APP_BRAND']);
-    const [projectName] = getBuildParams(['APP_PROJECT'], true);
-    config.brandName = brandName;
-    config.projectName = projectName;
-    options = initHybridOptions(config, options);
+    options = initMixOptions(defaults, options);
     super(defaults, options);
-    this.config = config;
-    this.remapStyleOutput();
-    this.addonProjectExtraTrees();
+    remapOutputPaths(this.options);
   }
 
-  remapStyleOutput() {
-    // remap outputPaths for styles
-    const { outputPaths } = this.options;
-    const cssPaths = outputPaths.app.css;
-    if (Object.keys(cssPaths).find(k => k.startsWith('app')).length > 1) {
-      delete cssPaths['app'];
+  initializeAddons() {
+    super.initializeAddons();
+    const extraOptions = this._loadSubProjectCli(this.options);
+    if (extraOptions) {
+      this.options = defaultsDeep(this.options, extraOptions);
     }
-    debug(`outputPaths.app.css: ${Object.keys(outputPaths.app.css)}`);
   }
 
-  addonProjectExtraTrees() {
-    this.projectExtraTrees = [];
-    const projectName = this.config.projectName;
-    const projectBuildScript = resolve(`${projectName}/${SubAppBuildScriptFile}`);
+  _loadSubProjectCli(options) {
+    const projectBuildScript = resolve(`${options.mixBuild.projectName}/${SubAppBuildScriptFile}`);
     if (fs.existsSync(projectBuildScript)) {
-      let trees = require(projectBuildScript)(this);
-      if (trees) {
-        this.projectExtraTrees.push(...trees);
-      }
+      return require(projectBuildScript)(this, options);
     }
+  }
+
+  addTree(trees) {
+    if (Array.isArray(trees)) this.extraTrees = trees;
   }
 
   toTree(additionalTrees = []) {
-    additionalTrees.push(...this.projectExtraTrees||[]);
+    if (Array.isArray(this.extraTrees)) {
+      additionalTrees.push(...this.extraTrees);
+    }
     return super.toTree(additionalTrees);
   }
 }
@@ -57,13 +50,12 @@ class EmberCombinedApp extends EmberApp {
 module.exports = EmberCombinedApp;
 
 
-function initHybridOptions(config, defaultOptions) {
+function initMixOptions(defaults, defaultOptions) {
   const EMBER_ENV = process.env.EMBER_ENV;
-  const options = {};
-  const [brandName] = getBuildParams(['APP_BRAND']);
-  const [projectName] = getBuildParams(['APP_PROJECT'], true);
+  const brandName = getBuildParam('APP_BRAND');
+  const projectName = getBuildParam('APP_PROJECT', true);
+  const options = { mixBuild: { brandName, projectName } };
   debug(`APP_BRAND: ${brandName}; APP_PROJECT: ${projectName}`);
-
   if (typeof defaultOptions.hinting === 'undefined') {
     options.hinting = EMBER_ENV === 'development';
   }
@@ -71,7 +63,7 @@ function initHybridOptions(config, defaultOptions) {
     options.tests = EMBER_ENV === 'test';
   }
   if (brandName) {
-    options.outputPaths = initOutputPaths(brandName, config);
+    options.outputPaths = initOutputPaths(brandName, defaults);
   }
   options.trees = initBuildTrees(projectName, brandName);
 
@@ -102,7 +94,8 @@ function initBuildTrees(projectName, brandName) {
   };
 }
 
-function initOutputPaths(brandName, config) {
+function initOutputPaths(brandName, defaults) {
+  const config = defaults.project.config(process.env.EMBER_ENV);
   return {
     app: {
       css: {
@@ -111,6 +104,16 @@ function initOutputPaths(brandName, config) {
       js: `/assets/${config.modulePrefix}.js`
     },
   };
+}
+
+function remapOutputPaths(options) {
+  // remap outputPaths for styles
+  const { outputPaths } = options;
+  const cssPaths = outputPaths.app.css;
+  if (Object.keys(cssPaths).find(k => k.startsWith('app')).length > 1) {
+    delete cssPaths['app'];
+  }
+  debug(`outputPaths.app.css: ${Object.keys(outputPaths.app.css)}`);
 }
 
 function mapAllApps(projectName) {
@@ -122,14 +125,12 @@ function mapAllApps(projectName) {
 }
 
 
-function getBuildParams(params, required) {
-  return params.map(key => {
-    let v = process.env[key];
-    if (!v && required) {
-      throw new Error(`missing required process environment parameter "${key}"`);
-    }
-    return v && v.toLowerCase();
-  });
+function getBuildParam(param, required) {
+  let v = process.env[param];
+  if (!v && required) {
+    throw new Error(`missing required process environment parameter "${key}"`);
+  }
+  return v && v.toLowerCase();
 }
 
 function filteredTrees(sources, options = {}) {

@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-mix-build",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "main": "index.js",
   "keywords": [
     "ember-addon",
@@ -19,6 +19,7 @@
     "debug": "^4.1.1",
     "ember-cli-babel": "*",
     "ember-cli-lint": "^0.0.1",
+    "ember-cli-lodash-subset": "^2.0.1",
     "walk-sync": "^2.0.2"
   }
 }
