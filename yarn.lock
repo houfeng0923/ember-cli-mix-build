@@ -1611,10 +1611,10 @@ broccoli-funnel@^2.0.0, broccoli-funnel@^2.0.1, broccoli-funnel@^2.0.2:
     symlink-or-copy "^1.0.0"
     walk-sync "^0.3.1"
 
-broccoli-funnel@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.npm.taobao.org/broccoli-funnel/download/broccoli-funnel-3.0.2.tgz#25e1c9a512b3852d3c9dde19ebdf07880d619c73"
-  integrity sha1-JeHJpRKzhS08nd4Z698HiA1hnHM=
+broccoli-funnel@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.npm.taobao.org/broccoli-funnel/download/broccoli-funnel-3.0.3.tgz#26fd42632471f67a91f4770d1987118087219937"
+  integrity sha1-Jv1CYyRx9nqR9HcNGYcRgIchmTc=
   dependencies:
     array-equal "^1.0.0"
     blank-object "^1.0.1"

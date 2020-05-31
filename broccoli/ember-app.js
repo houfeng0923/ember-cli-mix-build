@@ -16,7 +16,6 @@ class EmberCombinedApp extends EmberApp {
   constructor(defaults, options) {
     options = initMixOptions(defaults, options);
     super(defaults, options);
-    remapOutputPaths(this.options);
   }
 
   initializeAddons() {
@@ -24,6 +23,7 @@ class EmberCombinedApp extends EmberApp {
     const extraOptions = this._loadSubProjectCli(this.options);
     if (extraOptions) {
       this.options = defaultsDeep(this.options, extraOptions);
+      remapOutputPaths(this.options);
     }
   }
 

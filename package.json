@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-mix-build",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "index.js",
   "keywords": [
     "ember-addon",
@@ -12,7 +12,7 @@
     "ember-source": "*"
   },
   "dependencies": {
-    "broccoli-funnel": "^3.0.2",
+    "broccoli-funnel": "^3.0.3",
     "broccoli-merge-trees": "^4.2.0",
     "broccoli-plugin": "^4.0.2",
     "broccoli-slow-trees": "^3.1.0",
