@@ -128,7 +128,7 @@ function mapAllApps(projectName) {
 function getBuildParam(param, required) {
   let v = process.env[param];
   if (!v && required) {
-    throw new Error(`missing required process environment parameter "${key}"`);
+    throw new Error(`missing required process environment parameter "${param}}"`);
   }
   return v && v.toLowerCase();
 }
