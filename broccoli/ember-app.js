@@ -28,7 +28,7 @@ class EmberCombinedApp extends EmberApp {
   }
 
   _loadSubProjectCli(options) {
-    const projectBuildScript = resolve(`${options.mixBuild.projectName}/${SubAppBuildScriptFile}`);
+    const projectBuildScript = resolve(`app-${options.mixBuild.projectName}/${SubAppBuildScriptFile}`);
     if (fs.existsSync(projectBuildScript)) {
       return require(projectBuildScript)(this, options);
     }
@@ -117,7 +117,8 @@ function remapOutputPaths(options) {
 }
 
 function mapAllApps(projectName) {
-  return projectName.split('-').reduce((apps, _, i, arr) => {
+  let fullName = `app-${projectName}`;
+  return fullName.split('-').reduce((apps, _, i, arr) => {
     let app = arr.slice(0, i + 1).join('-');
     apps.push(app);
     return apps;
