@@ -1,11 +1,18 @@
 {
   "name": "ember-cli-mix-build",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "main": "index.js",
   "keywords": [
     "ember-addon",
-    "ember-resolver"
+    "ember-resolver",
+    "ember build tool"
   ],
+  "homepage": "https://github.com/houfeng0923/ember-cli-mix-build.git",
+  "description": "a new ember app building for mix project structure",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/houfeng0923/ember-cli-mix-build.git"
+  },
   "devDependencies": {
     "ember-cli": "*",
     "ember-resolver": "*",

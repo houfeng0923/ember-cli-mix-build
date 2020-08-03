@@ -82,12 +82,12 @@ A new ember app building for mix project structure.
 [source]                                                              [target]
  │                                                                     │
  ├─ /sound                   ┐                                         │
- │                           ├─   MergePlugin({overwrite: true})   --> └─ /(empty)
+ │                           ├─ MergeLikePlugin({overwrite: true}) --> └─ /(empty)
  └─ /__ext__/brand1/-sound ──┘
 ```
 
 ### todo
 
-- [ ] sourcemaps dist 尾部 增加 sourcemaps 链接,  build 时 单独生成
-- [ ] ember server 同时启动多个 project
-- [ ] ember build 同时打包多个 task
+- [ ] build optimize sourcemaps
+- [ ] ember server startup multi-project
+- [ ] ember parallel build

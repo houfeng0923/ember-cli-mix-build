@@ -15,7 +15,7 @@ export const ExtendedResolverMixin = Mixin.create({
     }
   },
 
-  moduleNameLookupPatterns: computed(function() {
+  moduleNameLookupPatterns: computed(function () {
     const defaultModulePatters = [...this._super(...arguments)];
     if (get(this, 'routesPodsEnabled')) {
       const routesPodsBasedLookupPattern = get(this, 'routesPodsBasedLookup');
