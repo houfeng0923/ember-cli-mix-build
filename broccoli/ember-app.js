@@ -6,6 +6,7 @@ const funnel = require('broccoli-funnel');
 const mergeTrees = require('broccoli-merge-trees');
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const defaultsDeep = require('ember-cli-lodash-subset').defaultsDeep;
+const WatchedTree = require('./watched-tree');
 const { getTargetPath, existSources, resolve, uniq, isEmptyDir, excludeTrim } = require('./util');
 const debug = require('debug')('erebor-cli-mix-build:debug');
 
@@ -34,8 +35,16 @@ class EmberCombinedApp extends EmberApp {
     }
   }
 
+  addWatchDirs(nodes = []) {
+    const watched = new WatchedTree(nodes);
+    this.addTree([watched]);
+  }
+
   addTree(trees) {
-    if (Array.isArray(trees)) this.extraTrees = trees;
+    if (Array.isArray(trees)) {
+      if (!this.extraTrees) this.extraTrees = [];
+      this.extraTrees.push(...trees);
+    }
   }
 
   toTree(additionalTrees = []) {

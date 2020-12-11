@@ -8,6 +8,7 @@ A new ember app building for mix project structure.
 - a mix project structure like pods
 - support nested app source
 - integrate lintTree in development for ember-cli > 3.17
+- add custom watch directories in development
 
 ### mix project structure
 
