@@ -1,17 +1,23 @@
+const fs = require('fs');
+const path = require('path');
+const Plugin = require('broccoli-plugin');
 
-var Plugin = require('broccoli-plugin');
+class WatchedTree extends Plugin {
+  constructor(inputNodes, options) {
+    options = options || {};
+    Object.assign(options, {
+      persistentOutput: true,
+      needsCache: false,
+      annotation: options.annotation || ('Watched - ' + inputNodes)
+    });
+    super(inputNodes, options);
+  }
 
-WatchedTree.prototype = Object.create(Plugin.prototype);
-WatchedTree.prototype.constructor = WatchedTree;
-function WatchedTree(inputNodes, options) {
-  options = options || {};
-  Plugin.call(this, inputNodes, {
-    persistentOutput: true,
-    needsCache: false,
-    annotation: options.annotation || ('Watched - ' + inputNodes)
-  });
+  build() {
+    fs.writeFileSync(path.join(this.outputPath, 'empty.js'), '', {
+      encoding: 'utf-8'
+    });
+  }
 }
 
-WatchedTree.prototype.build = function () {};
-
-module.export = WatchedTree;
+module.exports = WatchedTree;
