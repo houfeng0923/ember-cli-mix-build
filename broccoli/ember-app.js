@@ -10,6 +10,7 @@ const WatchedTree = require('./watched-tree');
 const { getTargetPath, existSources, resolve, uniq, isEmptyDir, excludeTrim } = require('./util');
 const debug = require('debug')('erebor-cli-mix-build:debug');
 
+const EMBER_ENV = process.env.EMBER_ENV;
 const EmbeddedPublicPath = 'public';
 const SubAppBuildScriptFile = 'build.js';
 
@@ -36,8 +37,11 @@ class EmberCombinedApp extends EmberApp {
   }
 
   addWatchDirs(nodes = []) {
-    const watched = new WatchedTree(nodes);
-    this.addTree([watched]);
+    // only dev mode
+    if (EMBER_ENV === 'development') {
+      const watched = new WatchedTree(nodes);
+      this.addTree([watched]);
+    }
   }
 
   addTree(trees) {
@@ -60,7 +64,6 @@ module.exports = EmberCombinedApp;
 
 
 function initMixOptions(defaults, defaultOptions) {
-  const EMBER_ENV = process.env.EMBER_ENV;
   const brandName = getBuildParam('APP_BRAND');
   const projectName = getBuildParam('APP_PROJECT', true);
   const options = { mixBuild: { brandName, projectName } };
