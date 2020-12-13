@@ -53,7 +53,8 @@ class EmberCombinedApp extends EmberApp {
 
   toTree(additionalTrees = []) {
     if (Array.isArray(this.extraTrees)) {
-      additionalTrees.push(...this.extraTrees);
+      const extraTrees = mergeTrees(this.extraTrees, { overwrite: true, annotation: 'mix-extra-trees' });
+      additionalTrees.push(extraTrees);
     }
     return super.toTree(additionalTrees);
   }
