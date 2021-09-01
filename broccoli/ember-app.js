@@ -51,12 +51,24 @@ class EmberCombinedApp extends EmberApp {
     }
   }
 
+  addExcludeDirs(dir) {
+    dir = Array.isArray(dir) ? dir: [dir];
+    if (!this.excludes) this.excludes = [];
+    this.excludes.push(...dir);
+  }
+
   toTree(additionalTrees = []) {
     if (Array.isArray(this.extraTrees)) {
       const extraTrees = mergeTrees(this.extraTrees, { overwrite: true, annotation: 'mix-extra-trees' });
       additionalTrees.push(extraTrees);
     }
-    return super.toTree(additionalTrees);
+    let tree = super.toTree(additionalTrees);
+    if (this.excludes.length) {
+      tree = new funnel(tree, {
+        exclude: this.excludes
+      });
+    }
+    return tree;
   }
 }
 

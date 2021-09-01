@@ -7,7 +7,7 @@ module.exports = {
     return false;
   },
 
-  included(parent) {
+  included() {
     this._super.included.apply(this, arguments);
     this.app = this._findHost();
     this.lintTreeInjection();
@@ -20,7 +20,8 @@ module.exports = {
     if (!parent.addonPackages[lintCli] && this.addonPackages[lintCli]) {
       let pkg = parent.addonPackages[lintCli] = this.addonPackages[lintCli];
       delete this.addonPackages[lintCli];
-      if (pkgInfo = parent.packageInfoCache.getEntry(pkg.path)) {
+      pkgInfo = parent.packageInfoCache.getEntry(pkg.path);
+      if (pkgInfo) {
         let index = this.addons.findIndex((_) => _.constructor === pkgInfo.getAddonConstructor());
         if (index > -1) {
           parent.addons.push(addon = this.addons[index]);
