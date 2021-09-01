@@ -63,7 +63,7 @@ class EmberCombinedApp extends EmberApp {
       additionalTrees.push(extraTrees);
     }
     let tree = super.toTree(additionalTrees);
-    if (this.excludes.length) {
+    if (Array.isArray(this.excludes)) {
       tree = new funnel(tree, {
         exclude: this.excludes
       });
